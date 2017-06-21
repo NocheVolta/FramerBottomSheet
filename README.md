@@ -14,7 +14,7 @@ Framer Vertical Panel is a component based on the bottom sheet view implementati
 
 ### Default States
 
-Each vertical panel has 4 default states. You can overwrite them by passing a numeric value. This number is the percentage of the screen that the panel will cover. For example, setting `middleHeight: 50` make the panel cover half of the screen.
+Each vertical panel has 4 default states. You can overwrite them by passing a numeric value. This number is the percentage of the screen that the panel will cover. For example, setting `middle: 50` make the panel cover half of the screen.
 
 | State name |   Property   | Default value | Description                    |
 | :--------: | :----------: | :-----------: | ------------------------------ |
@@ -38,6 +38,7 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |     image      |               | Background image of the panel            |
 |   initState    |    hidden     | State in which the panel will be initialized |
 |      name      | verticalPanel | Name that will have the layers created, this helps to identify the panel in your list of layers. |
+|      indicator | true          | Show the indicator on the top of the panel |
 
 ### Examples
 

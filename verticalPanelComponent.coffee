@@ -9,8 +9,9 @@ class VerticalPanel extends Layer
 		@options.backgroundColor ?= '#F0F0F0'
 		@options.image ?= ''
 		@options.name ?= 'verticalPanel'
+		@options.indicator ?= true
 
-		# Init State
+		# States
 		@options.initState ?= 'hidden'
 
 		# Panel Sizes
@@ -26,7 +27,7 @@ class VerticalPanel extends Layer
 		# Percentage to Px
 		statesHeights = 
 			bottom: @_covertPercentageToPx(@options.screenHeight, @options.bottom)
-			middle:  @_covertPercentageToPx(@options.screenHeight, @options.middle)
+			middle: @_covertPercentageToPx(@options.screenHeight, @options.middle)
 			top: @_covertPercentageToPx(@options.screenHeight, @options.top)
 
 		@options.states =
@@ -68,20 +69,27 @@ class VerticalPanel extends Layer
 			zIndex: -1
 
 		@options.verticalPanel = verticalPanel = new Layer
-			# Customs props
 			backgroundColor: @options.backgroundColor
 			image: @options.image
 			name: @options.name + '_content'
 			parent: wrapperPanel
-			
-			# Basic styles
-			shadowBlur: 10
-			shadowColor: "rgba(0,0,0,0.15)"
-			shadowY: -7
-			
+			shadowBlur: 2
+			shadowColor: "rgba(0,0,0,0.08)"
+			shadowY: -1
+			borderRadius: 12
 			# Dimensions
 			height: @_getSwipePageHeight(@options.screenHeight, @options.top)
 			width: @options.screenWidth
+
+		if @options.indicator
+			panelIndicator = new Layer
+				backgroundColor: "rgba(34,34,64,0.16)"
+				parent: verticalPanel
+				borderRadius: 10
+				height: 4
+				width: 40
+				x: Align.center
+				y: 9
 
 		@_addStates(verticalPanel, @options.states)
 		@_setAnimationOptions(verticalPanel)
@@ -98,7 +106,7 @@ class VerticalPanel extends Layer
 		posBottom = statesHeights.bottom
 		posMiddle = statesHeights.middle
 		posTop = statesHeights.top
-		
+
 		panel.onDragMove (event, layer) ->
 			if layer.y <= posTop
 				layer.y = posTop
