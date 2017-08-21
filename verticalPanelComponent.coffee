@@ -3,13 +3,22 @@ class VerticalPanel extends Layer
 		importable: false
 		exportable: false
 		get: -> @options.verticalPanel
+	@define "indicator",
+		importable: false
+		exportable: false
+		get: -> @options.indicatorArea
+	@define "state",
+		importable: false
+		exportable: false
+		get: -> @options.verticalPanel.states.current.name
 	constructor: (@options = {}) ->
 		# Backgrounds and Colors
 		@options.alphaColor ?= '#000'
-		@options.backgroundColor ?= '#F0F0F0'
+		@options.backgroundColor ?= 'rgba(255,255,255,0.95)'
 		@options.image ?= ''
 		@options.name ?= 'verticalPanel'
 		@options.indicator ?= true
+		@options.draggable ?= true
 
 		# States
 		@options.initState ?= 'hidden'
@@ -73,16 +82,27 @@ class VerticalPanel extends Layer
 			image: @options.image
 			name: @options.name + '_content'
 			parent: wrapperPanel
-			shadowBlur: 2
-			shadowColor: "rgba(0,0,0,0.08)"
+			shadowBlur: 4
+			shadowColor: "rgba(0,0,0,0.25)"
 			shadowY: -1
-			borderRadius: 12
 			# Dimensions
 			height: @_getSwipePageHeight(@options.screenHeight, @options.top)
 			width: @options.screenWidth
 
+		verticalPanel.style['border-radius'] = '16px 16px 0 0'
+
 		if @options.indicator
+
+			@options.indicatorArea = indicatorArea = new Layer
+				name: 'indicator_area'
+				backgroundColor: "transparent"
+				width: 100
+				height: 20
+				parent: verticalPanel
+				x: Align.center
+
 			panelIndicator = new Layer
+				name: 'panel_indicator'
 				backgroundColor: "rgba(34,34,64,0.16)"
 				parent: verticalPanel
 				borderRadius: 10
@@ -98,9 +118,10 @@ class VerticalPanel extends Layer
 	_setAnimationOptions: (layer) ->
 		layer.animationOptions =
 			time: @options.animationDuration
-		layer.draggable = true
-		layer.draggable.horizontal = false
-		layer.draggable.momentum = false
+		if @options.draggable
+			layer.draggable = true
+			layer.draggable.horizontal = false
+			layer.draggable.momentum = false
 
 	_registerPanelEvents: (panel, background, statesHeights) ->
 		posBottom = statesHeights.bottom

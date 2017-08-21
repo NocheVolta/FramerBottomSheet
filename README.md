@@ -27,7 +27,10 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 
 | Function          | Description          |
 | ----------------- | -------------------- |
-| panelName.content | Get the panel layer. This helps change layers properties, add new states, etc. |
+| panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
+| panelName.indicator | Return the indicator layer. |
+| panelName.state | Returns current panel state. For example 'top', 'middle' |
+
 
 ### Customisation
 
@@ -39,6 +42,10 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |   initState    |    hidden     | State in which the panel will be initialized |
 |      name      | verticalPanel | Name that will have the layers created, this helps to identify the panel in your list of layers. |
 |      indicator | true          | Show the indicator on the top of the panel |
+|      dragable  | true          | Set the panel to be dragable |
+| animationDuration | 0.3        | Value of time between panel states |
+
+
 
 ### Examples
 
