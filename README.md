@@ -1,15 +1,22 @@
 ## Framer Vertical Panel
 
-Framer Vertical Panel is a component based on the bottom sheet view implementation found in Maps by Apple. 
+Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. 
 
-![Demo](https://github.com/NocheVolta/Framer-VerticalPanel/blob/master/verticalpanel.gif)
+[![verticalpanel.gif](https://s26.postimg.org/dvnpra1kp/verticalpanel.gif)](https://postimg.org/image/5de9mxv1x/)
 
-### Setup
+### Install with Framer Modules
+
+<a href='https://open.framermodules.com/<verticalpanel>'>
+    <img alt='Install with Framer Modules'
+    src='https://www.framermodules.com/assets/badge@2x.png' width='160' height='40' />
+</a>
+
+### Manual Install
 
 1. Copy the `verticalPanelComponent.coffee` file in the modules directory inside your project.
 
 2. Import it using this line one the top of your code view   
-`VerticalPanel = require "verticalPanelComponent"`
+`VerticalPanel = require 'verticalPanelComponent'`
 
 3. Create your first vertical panel using  
 `panelBuilder = new VerticalPanel`
