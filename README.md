@@ -1,8 +1,9 @@
 ## Framer Vertical Panel
 
-Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. 
+Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/WNLzV)
 
 [![verticalpanel.gif](https://s26.postimg.org/dvnpra1kp/verticalpanel.gif)](https://postimg.org/image/5de9mxv1x/)
+
 
 ### Install with Framer Modules
 
