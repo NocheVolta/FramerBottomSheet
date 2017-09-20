@@ -7,7 +7,7 @@ Framer Vertical Panel is a component inspired on the bottom sheet view pattern o
 
 ### Install with Framer Modules
 
-<a href='https://open.framermodules.com/<verticalpanel>'>
+<a href='https://open.framermodules.com/Vertical Panel'>
     <img alt='Install with Framer Modules'
     src='https://www.framermodules.com/assets/badge@2x.png' width='160' height='40' />
 </a>
