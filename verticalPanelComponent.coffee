@@ -19,6 +19,7 @@ class VerticalPanel extends Layer
 		@options.name ?= 'verticalPanel'
 		@options.indicator ?= true
 		@options.draggable ?= true
+		@options.alphaOpacity ?= 0.6
 
 		# States
 		@options.initState ?= 'hidden'
@@ -27,7 +28,9 @@ class VerticalPanel extends Layer
 		@options.bottom ?= 10
 		@options.middle ?= 45
 		@options.top ?= 90
+		@options.animationCurve ?= Bezier(0.645,0.045,0.355,1)
 		@options.animationDuration ?= 0.3
+		@options.speedRatio ?= 875
 
 		# Screnn Dimensions
 		@options.screenHeight = Screen.height
@@ -57,6 +60,9 @@ class VerticalPanel extends Layer
 	# Covert percentage to pixels difference based on screen height
 	_covertPercentageToPx:(screenHeight, percentage) ->
 		Utils.round(screenHeight * ((100 - percentage) / 100))
+
+	_getDiff: (y, newY) ->
+		Utils.round(Math.abs(y - newY) / @options.speedRatio, 3)
 	
 	_addStates: (panel, states) ->
 		panel.states = @options.states
@@ -117,6 +123,7 @@ class VerticalPanel extends Layer
 
 	_setAnimationOptions: (layer) ->
 		layer.animationOptions =
+			curve: @options.animationCurve
 			time: @options.animationDuration
 		if @options.draggable
 			layer.draggable = true
@@ -128,6 +135,19 @@ class VerticalPanel extends Layer
 		posMiddle = statesHeights.middle
 		posTop = statesHeights.top
 
+		bgHandler = (event, layer) =>
+			if layer.opacity == @options.alphaOpacity && panel.states.previous.name? && panel.states.previous.name != 'hidden'
+		    	@animateTo(panel.states.previous.name)
+
+		if @options.initState != 'top'
+			background.off(Events.Tap, bgHandler)
+
+		panel.onStateSwitchEnd (from, to) ->
+			if to == 'top'
+				background.on(Events.Tap, bgHandler)
+			else 
+				background.off(Events.Tap, bgHandler)
+
 		panel.onDragMove (event, layer) ->
 			if layer.y <= posTop
 				layer.y = posTop
@@ -136,31 +156,36 @@ class VerticalPanel extends Layer
 
 		panel.on "change:y", =>
 			if panel.y < posMiddle
-				background.opacity = Utils.modulate(panel.y, [posMiddle, posTop], [0, 0.6], true)
+				background.opacity = Utils.modulate(panel.y, [posMiddle, posTop], [0, @options.alphaOpacity], true)
 			else 
 				background.animate
 					opacity: 0
-					options:
-						time: 0.1
+					options: time: 0.1
 		
-		panel.onDragEnd (event, layer) ->
+		panel.onDragEnd (event, layer) =>
 			direction = event.offsetDirection
 			velocity = event.velocityY
-				
-			# If the gesture is too fast, then expand to top
-			if velocity <= -3
-				layer.animate('top')
-			else if velocity <= -0.4 or direction == 'up'
-				if posMiddle < layer.y < posBottom
-					layer.animate('middle')
-				else if  posMiddle > layer.y
-					layer.animate('top')
+			y = layer.y
+			nextState = layer.states.current.name
+
+			if direction == 'up'
+				if posMiddle <= layer.y <= posBottom
+					nextState = 'middle'
+				else if posMiddle >= layer.y
+					nextState = 'top'
 				else 
-					layer.animate('bottom')
-			if direction == 'down' or velocity >= 0.4
-				if posMiddle > layer.y > posTop
-					layer.animate('middle')
-				else if layer.y > posMiddle
-					layer.animate('bottom')
+					nextState = 'bottom'
+			else if direction == 'down'
+				if posMiddle >= layer.y >= posTop
+					nextState = 'middle'
+				else if layer.y >= posMiddle
+					nextState = 'bottom'
+
+			@animateTo(nextState)
+
+	animateTo: (nextState) ->
+		diff = @_getDiff(@options.verticalPanel.y, @options.verticalPanel.states[nextState].y)
+		@options.verticalPanel.animate(nextState, options: time: diff)
+
 
 module.exports = VerticalPanel;

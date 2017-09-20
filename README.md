@@ -1,6 +1,6 @@
 ## Framer Vertical Panel
 
-Framer Vertical Panel is a component based on the bottom sheet view implementation found in apps such as Maps by Apple or Google Maps. 
+Framer Vertical Panel is a component based on the bottom sheet view implementation found in Maps by Apple. 
 
 ### Setup
 
@@ -30,6 +30,7 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 | panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
 | panelName.indicator | Return the indicator layer. |
 | panelName.state | Returns current panel state. For example 'top', 'middle' |
+| panelName.animateTo | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property. |
 
 
 ### Customisation
@@ -37,33 +38,36 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |    Property    | Default Value | Description                              |
 | :------------: | :-----------: | ---------------------------------------- |
 |   alphaColor   |    #000000    | Color of alpha that appear when moving between `middle` and `top` states. |
+|   alphaOpacity |    0.6        | Opacity value for the alpha background |
 | backgrounColor |    #F0F0F0    | Background color of the panel            |
 |     image      |               | Background image of the panel            |
 |   initState    |    hidden     | State in which the panel will be initialized |
 |      name      | verticalPanel | Name that will have the layers created, this helps to identify the panel in your list of layers. |
 |      indicator | true          | Show the indicator on the top of the panel |
 |      dragable  | true          | Set the panel to be dragable |
-| animationDuration | 0.3        | Value of time between panel states |
+| animationCurve | Bezier(0.645,0.045,0.355,1) | Curve to when panel move between states |
+| speedRatio     | 875           | Higher the number, faster the animations. * |
 
+\* The animations between states now have a variable timming depeding the distance (points) to move. For example if the panel will animate 300 points, the calc will be `Utils.round(300 / speedRatio, 3)` = `0.343` seconds. 
 
 
 ### Examples
 
 ```coffeescript
-# Print the current panel state name
-panelBuilder = new VerticalPanel
-print panelBuilder.content.states.current.name
-
 # Create a panel, initialize it with the 'bottom' state, and a red background
 panelBuilder = new VerticalPanel
   name: 'builder'
   initState: 'bottom'
   backgroundColor: 'red'
+  speedRatio: 600
 
 # Change panel properties after it has been created
-panelBuilder.content.props = 
-  backgrondColor = 'cyan'
-  blur = 3
+panelBuilder.content.backgrondColor = 'cyan'
+panelBuilder.content.blur = 3
+
+# Print the current panel state name
+panelBuilder = new VerticalPanel
+print panelBuilder.state
 
 # Overwrite the default state heights, and add an image as background
 panelVehicle = new VerticalPanel
@@ -72,6 +76,9 @@ panelVehicle = new VerticalPanel
   middle: 30
   top: 50
   image: 'images/vehicles.png'
+
+# Animate to other state
+panelBuilder.animateTo('top')
 
 # Add a new state to the panel
 panelVehicle.content.states.slideRight =
