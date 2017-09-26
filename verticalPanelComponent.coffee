@@ -96,7 +96,7 @@ class VerticalPanel extends Layer
 			shadowColor: "rgba(0,0,0,0.25)"
 			shadowY: -1
 			# Dimensions
-			height: @_getSwipePageHeight(@options.screenHeight, @options.top)
+			height: @_getSwipePageHeight(@options.screenHeight, @options.top) + statesHeights.top/2
 			width: @options.screenWidth
 
 		verticalPanel.style['border-radius'] = '16px 16px 0 0'
@@ -153,8 +153,8 @@ class VerticalPanel extends Layer
 				background.off(Events.Tap, bgHandler)
 
 		panel.onDragMove (event, layer) ->
-			if layer.y <= posTop * 0.9
-				layer.y = posTop * 0.9
+			if layer.y <= posTop * 0.7
+				layer.y = posTop * 0.7
 			if layer.y >= posBottom
 				layer.y = posBottom
 
@@ -173,7 +173,10 @@ class VerticalPanel extends Layer
 			nextState = layer.states.current.name
 
 			if layer.y <= posTop
-				layer.animate('top', options: time: 0.5)
+				layer.animate
+					y: statesHeights.top
+					options: 
+						time: 0.3
 			else 
 				if direction == 'up'
 					if posMiddle <= layer.y <= posBottom
@@ -188,7 +191,7 @@ class VerticalPanel extends Layer
 					else if layer.y >= posMiddle
 						nextState = 'bottom'
 
-			@animateTo(nextState)
+				@animateTo(nextState)
 
 	animateTo: (nextState) ->
 		diff = @_getDiff(@options.verticalPanel.y, @options.verticalPanel.states[nextState].y)
