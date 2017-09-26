@@ -1,4 +1,8 @@
 class VerticalPanel extends Layer
+	@define "wrapper",
+		importable: false
+		exportable: false
+		get: -> @options.wrapperPanel
 	@define "content",
 		importable: false
 		exportable: false
@@ -68,7 +72,7 @@ class VerticalPanel extends Layer
 		panel.states = @options.states
 		panel.stateSwitch(@options.initState)
 	_createLayers: (statesHeights) ->
-		wrapperPanel = new Layer
+		@options.wrapperPanel = wrapperPanel = new Layer
 			backgroundColor: 'transparent'
 			height: @options.screenHeight
 			name: @options.name + '_wrapper'
@@ -169,7 +173,7 @@ class VerticalPanel extends Layer
 			nextState = layer.states.current.name
 
 			if layer.y <= posTop
-				layer.animate('top', options: time: 0.25)
+				layer.animate('top', options: time: 0.5)
 			else 
 				if direction == 'up'
 					if posMiddle <= layer.y <= posBottom
