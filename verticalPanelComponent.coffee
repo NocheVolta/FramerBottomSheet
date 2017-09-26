@@ -149,8 +149,8 @@ class VerticalPanel extends Layer
 				background.off(Events.Tap, bgHandler)
 
 		panel.onDragMove (event, layer) ->
-			if layer.y <= posTop
-				layer.y = posTop
+			if layer.y <= posTop * 0.9
+				layer.y = posTop * 0.9
 			if layer.y >= posBottom
 				layer.y = posBottom
 
@@ -168,18 +168,21 @@ class VerticalPanel extends Layer
 			y = layer.y
 			nextState = layer.states.current.name
 
-			if direction == 'up'
-				if posMiddle <= layer.y <= posBottom
-					nextState = 'middle'
-				else if posMiddle >= layer.y
-					nextState = 'top'
-				else 
-					nextState = 'bottom'
-			else if direction == 'down'
-				if posMiddle >= layer.y >= posTop
-					nextState = 'middle'
-				else if layer.y >= posMiddle
-					nextState = 'bottom'
+			if layer.y <= posTop
+				layer.animate('top', options: time: 0.25)
+			else 
+				if direction == 'up'
+					if posMiddle <= layer.y <= posBottom
+						nextState = 'middle'
+					else if posMiddle >= layer.y
+						nextState = 'top'
+					else 
+						nextState = 'bottom'
+				else if direction == 'down'
+					if posMiddle >= layer.y >= posTop
+						nextState = 'middle'
+					else if layer.y >= posMiddle
+						nextState = 'bottom'
 
 			@animateTo(nextState)
 
