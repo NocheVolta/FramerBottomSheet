@@ -3,7 +3,7 @@
     "description": "Component inspired on the bottom sheet view pattern of Maps (iOS) by Apple.",
     "author": "Iván Flores",
 
-    "require": "verticalPanel = require 'verticalPanelComponent'" ,
+    "require": "VerticalPanel = require 'verticalPanelComponent'" ,
     "install": "verticalPanelComponent.coffee",
     "example": "example.coffee",
 

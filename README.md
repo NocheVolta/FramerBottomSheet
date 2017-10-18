@@ -2,7 +2,7 @@
 
 Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/WNLzV)
 
-[![verticalpanel.gif](https://s26.postimg.org/dvnpra1kp/verticalpanel.gif)](https://postimg.org/image/5de9mxv1x/)
+[![verticalpanel.png](https://s1.postimg.org/75635n4agv/verticalpanel.png)](https://postimg.org/image/2ikg4y5qt7/)
 
 
 ### Install with Framer Modules
@@ -37,13 +37,14 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 
 | Function          | Description          |
 | ----------------- | -------------------- |
+| panelName.wrapper | Returns the wrapper layer. This layer contains everything, including the alpha background |
 | panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
 | panelName.indicator | Return the indicator layer. |
 | panelName.state | Returns current panel state. For example 'top', 'middle' |
 | panelName.animateTo | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property. |
 
 
-### Customisation
+### Customization styles and animations
 
 |    Property    | Default Value | Description                              |
 | :------------: | :-----------: | ---------------------------------------- |
@@ -56,10 +57,11 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |      indicator | true          | Show the indicator on the top of the panel |
 |      dragable  | true          | Set the panel to be dragable |
 | animationCurve | Bezier(0.645,0.045,0.355,1) | Curve to when panel move between states |
-| speedRatio     | 875           | Higher the number, faster the animations. * |
+| speedRatio     | 0.875           | Higher the number, faster the animations. * |
 
-\* The animations between states now have a variable timming depeding the distance (points) to move. For example if the panel will animate 300 points, the calc will be `Utils.round(300 / speedRatio, 3)` = `0.343` seconds. 
+\* The animations between states now have a variable timing relative to the distance (points) to move. For example if the panel will animate 300 points, the calc will be `Utils.round(300 / speedRatio) / 1000` = `0.343` seconds.
 
+You can always use `panelName.content.animate('stateName', options)` if you want have more control.
 
 ### Examples
 
@@ -78,6 +80,15 @@ panelBuilder.content.blur = 3
 # Print the current panel state name
 panelBuilder = new VerticalPanel
 print panelBuilder.state
+
+# Add custom event
+panelBuilder.content.on Events.Tap, (event, layer) ->
+  layer.animate(
+    'top',
+    options:
+      time: 1, curve: Spring(damping: 0.7)
+  )
+
 
 # Overwrite the default state heights, and add an image as background
 panelVehicle = new VerticalPanel
