@@ -7,5 +7,5 @@
     "install": "verticalPanelComponent.coffee",
     "example": "example.coffee",
 
-    "thumb": "verticalpanel.gif"
+    "thumb": "verticalpanel.png"
 }
