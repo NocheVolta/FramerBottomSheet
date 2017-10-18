@@ -33,16 +33,6 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |   middle   | middle |      45       | Show panel at 45% of the screen height  |
 |    top     |  top  |      90       | Show panel at 90% of the screen height  |
 
-### Functions
-
-| Function          | Description          |
-| ----------------- | -------------------- |
-| panelName.wrapper | Returns the wrapper layer. This layer contains everything, including the alpha background |
-| panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
-| panelName.indicator | Return the indicator layer. |
-| panelName.state | Returns current panel state. For example 'top', 'middle' |
-| panelName.animateTo | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property. |
-
 
 ### Customization styles and animations
 
@@ -63,6 +53,16 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 
 You can always use `panelName.content.animate('stateName', options)` if you want have more control.
 
+### Functions
+
+| Function          | Description          |
+| ----------------- | -------------------- |
+| panelName.wrapper | Returns the wrapper layer. This layer contains everything, including the alpha background |
+| panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
+| panelName.indicator | Return the indicator layer. |
+| panelName.state | Returns current panel state. For example 'top', 'middle' |
+| panelName.animateTo | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property. |
+
 ### Examples
 
 ```coffeescript
@@ -78,21 +78,11 @@ panelBuilder.content.backgrondColor = 'cyan'
 panelBuilder.content.blur = 3
 
 # Print the current panel state name
-panelBuilder = new VerticalPanel
 print panelBuilder.state
 
-# Add custom event
-panelBuilder.content.on Events.Tap, (event, layer) ->
-  layer.animate(
-    'top',
-    options:
-      time: 1, curve: Spring(damping: 0.7)
-  )
-
-
-# Overwrite the default state heights, and add an image as background
+# Set a custom name and overwrite the default state heights, and add an image as background
 panelVehicle = new VerticalPanel
-  name: 'vehicleSelector'
+  name: 'myVehiclesPanel'
   bottom: 5
   middle: 30
   top: 50
@@ -101,9 +91,16 @@ panelVehicle = new VerticalPanel
 # Animate to other state
 panelBuilder.animateTo('top')
 
-# Add a new state to the panel
-panelVehicle.content.states.slideRight =
-  x: Screen.width
+# Animate to other state with default .animate function
+panelBuilder.content.animate(
+	'top',
+    options: time: 1, curve: Spring(damping: 0.1)
+)
 
-panelVehicle.content.animate('slideRight')
+# Add a new state to the panel and animate
+panel.content.states.bgPurple =
+  backgroundColor: 'purple'
+  options: time: 0.5
+
+panel.content.animate('bgPurple')
 ```
