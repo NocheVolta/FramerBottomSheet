@@ -1,7 +1,7 @@
 ## Framer Vertical Panel
 [![license](https://img.shields.io/github/license/bpxl-labs/RemoteLayer.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
-[![Maintenance](https://img.shields.io/maintenance/yes/2017.svg)]()
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![Maintenance](https://img.shields.io/maintenance/yes/2017.svg)
 
 Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/WNLzV)
 
