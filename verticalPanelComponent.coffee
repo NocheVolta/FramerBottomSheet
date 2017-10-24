@@ -141,8 +141,7 @@ class VerticalPanel extends Layer
     posTop = statesHeights.top
 
     bgHandler = (event, layer) =>
-      if layer.opacity == @options.alphaOpacity &&
-      panel.states.previous.name? && panel.states.previous.name != 'hidden'
+      if layer.opacity == @options.alphaOpacity && panel.states.previous.name?
         @animateTo(panel.states.previous.name)
 
     if @options.initState != 'top'
@@ -151,8 +150,10 @@ class VerticalPanel extends Layer
     panel.onStateSwitchEnd (from, to) ->
       if to == 'top'
         background.on(Events.Tap, bgHandler)
+        background.ignoreEvents = false
       else
         background.off(Events.Tap, bgHandler)
+        background.ignoreEvents = true
 
     panel.onDragMove (event, layer) ->
       maxTop = posTop - 20
