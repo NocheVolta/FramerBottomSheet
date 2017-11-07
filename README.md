@@ -49,8 +49,12 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |      name      | verticalPanel | Name that will have the layers created, this helps to identify the panel in your list of layers. |
 |      indicator | true          | Show the indicator on the top of the panel |
 |      dragable  | true          | Set the panel to be dragable |
-| animationCurve | Bezier(0.645,0.045,0.355,1) | Curve to when panel move between states |
-| speedRatio     | 0.875           | Higher the number, faster the animations. * |
+| animationCurve | Spring(damping: 0.75) | Curve to when panel move between states |
+| speedRatio     | 0.185           | Higher the number, faster the animations * |
+| fullHeight     | false           | Panel height is equal to the screen height |
+| fallbackState  | middle          | State to be used when a previous state is not available and user tap on the dim background |
+| tolerance     | 30           | Minimum number of points of tolerance on DragEnd to come back to the current state.  |
+
 
 \* The animations between states now have a variable timing relative to the distance (points) to move. For example if the panel will animate 300 points, the calc will be `Utils.round(300 / speedRatio) / 1000` = `0.343` seconds.
 
@@ -64,7 +68,7 @@ You can always use `panelName.content.animate('stateName', options)` if you want
 | panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
 | panelName.indicator | Return the indicator layer. |
 | panelName.state | Returns current panel state. For example 'top', 'middle' |
-| panelName.animateTo | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property. |
+| panelName.animateTo(state, time) | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property, time argument overwrite the speedRatio. |
 
 ### Examples
 

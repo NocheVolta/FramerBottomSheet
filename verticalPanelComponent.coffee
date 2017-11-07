@@ -23,18 +23,21 @@ class VerticalPanel extends Layer
     @options.name ?= 'verticalPanel'
     @options.indicator ?= true
     @options.draggable ?= true
+    @options.fullHeight ?= false
     @options.alphaOpacity ?= 0.6
 
     # States
     @options.initState ?= 'hidden'
+    @options.fallbackState ?= 'middle'
 
     # Panel Sizes
     @options.bottom ?= 10
     @options.middle ?= 45
     @options.top ?= 90
-    @options.animationCurve ?= Bezier(0.645,0.045,0.355,1)
+    @options.animationCurve ?= Spring(damping: 0.75)
     @options.animationDuration ?= 0.3
-    @options.speedRatio ?= 0.875
+    @options.speedRatio ?= 0.185
+    @options.tolerance ?= 30
 
     # Screnn Dimensions
     @options.screenHeight = Screen.height
@@ -55,15 +58,29 @@ class VerticalPanel extends Layer
         y: statesHeights.middle
       top:
         y: statesHeights.top
+
+    @options.ranges = [
+      { max: statesHeights.top + @options.tolerance, min: statesHeights.top - @options.tolerance, name: 'top' }
+      { max: statesHeights.middle + @options.tolerance, min: statesHeights.middle - @options.tolerance, name: 'middle' }
+      { max: statesHeights.bottom + @options.tolerance, min: statesHeights.bottom - @options.tolerance, name: 'bottom' }
+    ]
+
     @_createLayers(statesHeights)
 
   # Convert percentage to pixels based on screen height
   _getSwipePageHeight: (screenHeight, percentage) ->
     Utils.round(screenHeight * (percentage / 100))
 
+  _getStateToSnap: (ranges, y) ->
+    ranges.find((range) -> range.min <= y <= range.max)
+
   # Covert percentage to pixels difference based on screen height
   _covertPercentageToPx:(screenHeight, percentage) ->
     Utils.round(screenHeight * ((100 - percentage) / 100))
+
+  # Convert pixels to percentage based on screen height
+  _convertPxtoPercentage: (screenHeight, px) ->
+    px * 100 / screenHeight
 
   _getDiff: (y, newY) ->
     Utils.round(Math.abs(y - newY) / @options.speedRatio) / 1000
@@ -97,8 +114,10 @@ class VerticalPanel extends Layer
       shadowY: -1
       # Dimensions
       height: @_getSwipePageHeight(
-        @options.screenHeight, @options.top) + 20
+        @options.screenHeight, @options.top) + @options.screenHeight * 0.1
       width: @options.screenWidth
+
+    if @options.fullHeight then @options.verticalPanel.height = @options.screenHeight
 
     verticalPanel.style['border-radius'] = '16px 16px 0 0'
 
@@ -141,26 +160,29 @@ class VerticalPanel extends Layer
     posTop = statesHeights.top
 
     bgHandler = (event, layer) =>
-      if layer.opacity == @options.alphaOpacity && panel.states.previous.name?
+      if panel.states.previous.name == panel.states.current.name or panel.states.previous.name == 'default'
+        @animateTo(@options.fallbackState)
+      else if layer.opacity == @options.alphaOpacity && panel.states.previous.name?
         @animateTo(panel.states.previous.name)
 
     if @options.initState != 'top'
       background.off(Events.Tap, bgHandler)
+    else
+      background.opacity = @options.alphaOpacity
+      background.on(Events.Tap, bgHandler)
 
     panel.onStateSwitchEnd (from, to) ->
-      if to == 'top'
+      if to == 'top' or panel.y == posTop
         background.on(Events.Tap, bgHandler)
         background.ignoreEvents = false
       else
         background.off(Events.Tap, bgHandler)
         background.ignoreEvents = true
 
-    panel.onDragMove (event, layer) ->
-      maxTop = posTop - 20
-      if layer.y <= maxTop
-        layer.y = maxTop
-      if layer.y >= posBottom
-        layer.y = posBottom
+    panel.onDragMove (event, layer) =>
+      maxTop = posTop - @options.screenHeight * 0.1
+      if layer.y <= 0
+        layer.y = 0
 
     panel.on "change:y", =>
       if panel.y < posMiddle
@@ -173,39 +195,40 @@ class VerticalPanel extends Layer
           options: time: 0.1
 
     panel.onDragEnd (event, layer) =>
-      direction = event.offsetDirection
-      velocity = event.velocityY
+      time = null
       y = layer.y
+      direction = event.offsetDirection
+      snapState = if @_getStateToSnap(@options.ranges, y) then @_getStateToSnap(@options.ranges, y).name else null
       nextState = layer.states.current.name
-
+      velocity = Utils.round(Math.abs(event.velocityY), 2)
+      percentage = Utils.round(Math.abs(@_convertPxtoPercentage(@options.screenHeight, event.offset.y)), 2)
       if layer.y <= posTop
-        layer.animate
-          y: statesHeights.top
-          options: time: 0.35
-      else
-        if direction == 'up'
-          if posMiddle <= layer.y <= posBottom
-            nextState = 'middle'
-          else if posMiddle >= layer.y
-            nextState = 'top'
-          else
-            nextState = 'bottom'
-        else if direction == 'down'
-          if posMiddle >= layer.y >= posTop
-            nextState = 'middle'
-          else if layer.y >= posMiddle
-            nextState = 'bottom'
+        nextState = 'top'
+      else if percentage >= 10 or velocity >= 0.25
+          if direction == 'up'
+            if posMiddle <= layer.y <= posBottom
+              nextState = 'middle'
+            else if posMiddle >= layer.y
+              nextState = 'top'
+            else
+              nextState = 'bottom'
+          else if direction == 'down'
+            if posMiddle >= layer.y >= posTop
+              nextState = 'middle'
+            else if layer.y >= posMiddle
+              nextState = 'bottom'
 
-        @animateTo(nextState)
+      nextState = snapState || nextState
 
-  animateTo: (nextState) ->
-    diff = Utils.round(
+      @animateTo(nextState, time)
+
+  animateTo: (nextState, time) ->
+    diff = time || Utils.round(
       @_getDiff(
         @options.verticalPanel.y
         @options.verticalPanel.states[nextState].y
         ), 3)
-    if diff < 0.2 then diff = 0.2
+    if diff < 0.35 then diff = 0.35
     @options.verticalPanel.animate(nextState, options: time: diff)
-
 
 module.exports = VerticalPanel
