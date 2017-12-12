@@ -126,10 +126,11 @@ class VerticalPanel extends Layer
       @options.indicatorArea = indicatorArea = new Layer
         name: 'indicator_area'
         backgroundColor: "transparent"
-        width: 100
-        height: 20
+        width: verticalPanel.width
+        height: 50
         parent: verticalPanel
         x: Align.center
+        y: -30
 
       panelIndicator = new Layer
         name: 'panel_indicator'
