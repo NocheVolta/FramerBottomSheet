@@ -230,6 +230,7 @@ class VerticalPanel extends Layer
         @options.verticalPanel.states[nextState].y
         ), 3)
     if diff < 0.35 then diff = 0.35
+    else if diff > 0.7 then diff = 0.7
     @options.verticalPanel.animate(nextState, options: time: diff)
 
 module.exports = VerticalPanel
