@@ -30,14 +30,15 @@ class VerticalPanel extends Layer
     @options.initState ?= 'hidden'
     @options.fallbackState ?= 'middle'
 
-    # Panel Sizes
+    # Panel
     @options.bottom ?= 10
     @options.middle ?= 45
     @options.top ?= 90
     @options.animationCurve ?= Spring(damping: 0.75)
     @options.animationDuration ?= 0.3
-    @options.speedRatio ?= 0.185
+    @options.speedRatio ?= 0.75
     @options.tolerance ?= 30
+    @options.lockSpeed ?= false
 
     # Screnn Dimensions
     @options.screenHeight = Screen.height
@@ -223,14 +224,15 @@ class VerticalPanel extends Layer
 
       @animateTo(nextState, time)
 
-  animateTo: (nextState, time) ->
+  animateTo: (nextState, time = null) ->
     diff = time || Utils.round(
       @_getDiff(
         @options.verticalPanel.y
         @options.verticalPanel.states[nextState].y
         ), 3)
-    if diff < 0.35 then diff = 0.35
-    else if diff > 0.7 then diff = 0.7
+    if !time && @options.lockSpeed
+      if diff < 0.35 then diff = 0.35
+      else if diff > 0.7 then diff = 0.7
     @options.verticalPanel.animate(nextState, options: time: diff)
 
 module.exports = VerticalPanel

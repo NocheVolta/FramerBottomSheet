@@ -1,7 +1,7 @@
 ## Framer Vertical Panel
 [![license](https://img.shields.io/github/license/bpxl-labs/RemoteLayer.svg)](https://opensource.org/licenses/MIT)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![Maintenance](https://img.shields.io/maintenance/yes/2017.svg)
+![Maintenance](https://img.shields.io/maintenance/yes/2018.svg)
 
 Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/WNLzV)
 
@@ -50,7 +50,8 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |      indicator | true          | Show the indicator on the top of the panel |
 |      dragable  | true          | Set the panel to be dragable |
 | animationCurve | Spring(damping: 0.75) | Curve to when panel move between states |
-| speedRatio     | 0.185           | Higher the number, faster the animations * |
+| speedRatio     | 0.75           | Higher the number, faster the animations * |
+| lockSpeed     | false           | Use minimum (0.35) and maximum (0.7) values when animateTo exceeds those limits. |
 | fullHeight     | false           | Panel height is equal to the screen height |
 | fallbackState  | middle          | State to be used when a previous state is not available and user tap on the dim background |
 | tolerance     | 30           | Minimum number of points of tolerance on DragEnd to come back to the current state.  |
@@ -68,7 +69,7 @@ You can always use `panelName.content.animate('stateName', options)` if you want
 | panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
 | panelName.indicator | Return the indicator layer. |
 | panelName.state | Returns current panel state. For example 'top', 'middle' |
-| panelName.animateTo(state, time) | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property, time argument overwrite the speedRatio. |
+| panelName.animateTo(state, time) | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property, time argument overwrite the speedRatio and max/min values. |
 
 ### Examples
 
