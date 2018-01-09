@@ -51,7 +51,6 @@ Each vertical panel has 4 default states. You can overwrite them by passing a nu
 |      dragable  | true          | Set the panel to be dragable |
 | animationCurve | Spring(damping: 0.75) | Curve to when panel move between states |
 | speedRatio     | 0.75           | Higher the number, faster the animations * |
-| lockSpeed     | false           | Use minimum (0.35) and maximum (0.7) values when animateTo exceeds those limits. |
 | fullHeight     | false           | Panel height is equal to the screen height |
 | fallbackState  | middle          | State to be used when a previous state is not available and user tap on the dim background |
 | tolerance     | 30           | Minimum number of points of tolerance on DragEnd to come back to the current state.  |

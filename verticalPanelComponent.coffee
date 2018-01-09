@@ -38,7 +38,6 @@ class VerticalPanel extends Layer
     @options.animationDuration ?= 0.3
     @options.speedRatio ?= 0.75
     @options.tolerance ?= 30
-    @options.lockSpeed ?= false
 
     # Screnn Dimensions
     @options.screenHeight = Screen.height
@@ -230,9 +229,8 @@ class VerticalPanel extends Layer
         @options.verticalPanel.y
         @options.verticalPanel.states[nextState].y
         ), 3)
-    if !time && @options.lockSpeed
-      if diff < 0.35 then diff = 0.35
-      else if diff > 0.7 then diff = 0.7
-    @options.verticalPanel.animate(nextState, options: time: diff)
+    if diff < 0.25 then diff = 0.25
+    if !@options.verticalPanel.isAnimating
+      @options.verticalPanel.animate(nextState, options: time: diff)
 
 module.exports = VerticalPanel
