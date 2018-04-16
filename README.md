@@ -6,9 +6,7 @@
 Framer Bottom Sheet is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. 
 [View demo](https://framer.cloud/nDHim)
 
-{::nomarkdown}
-<img src="https://raw.githubusercontent.com/NocheVolta/FramerBottomSheet/master/bottomSheet.gif" width="280"/>
-{:/}
+<img src="https://raw.githubusercontent.com/NocheVolta/FramerBottomSheet/master/bottomSheet.gif" width="320"/>
 
 ### Install with Framer Modules
 
