@@ -1,4 +1,10 @@
-class VerticalPanel extends Layer
+defaultStates = [
+  { name: 'bottom', height: 15 }
+  { name: 'middle', height: 40 }
+  { name: 'top', height: 90 }
+]
+
+class BottomSheet extends Layer
   @define "wrapper",
     importable: false
     exportable: false
@@ -16,66 +22,62 @@ class VerticalPanel extends Layer
     exportable: false
     get: -> @options.verticalPanel.states.current.name
   constructor: (@options = {}) ->
-    # Backgrounds and Colors
+
     @options.alphaColor ?= '#000'
-    @options.backgroundColor ?= 'rgba(255,255,255,0.95)'
-    @options.image ?= ''
-    @options.name ?= 'verticalPanel'
-    @options.indicator ?= true
-    @options.draggable ?= true
-    @options.fullHeight ?= false
     @options.alphaOpacity ?= 0.6
-
-    # States
-    @options.initState ?= 'hidden'
-    @options.fallbackState ?= 'middle'
-
-    # Panel
-    @options.bottom ?= 10
-    @options.middle ?= 45
-    @options.top ?= 90
     @options.animationCurve ?= Spring(damping: 0.75)
     @options.animationDuration ?= 0.3
-    @options.speedRatio ?= 0.75
-    @options.tolerance ?= 30
-
-    # Screnn Dimensions
+    @options.backgroundColor ?= 'rgba(255,255,255,0.95)'
+    @options.deltaTolerance ?= 1
+    @options.draggable ?= true
+    @options.hideable ?= true
+    @options.image ?= ''
+    @options.indicator ?= true
+    @options.initState ?= null
+    @options.name ?= 'verticalPanel'
     @options.screenHeight = Screen.height
     @options.screenWidth = Screen.width
+    @options.states ?= defaultStates
+    @options.speedRatio ?= 0.35
+    @options.tolerance ?= 30
 
-    # Percentage to Px
-    statesHeights =
-      bottom: @_covertPercentageToPx(@options.screenHeight, @options.bottom)
-      middle: @_covertPercentageToPx(@options.screenHeight, @options.middle)
-      top: @_covertPercentageToPx(@options.screenHeight, @options.top)
+    @options.fallbackState ?= @options.states[0].name
 
-    @options.states =
-      hidden:
-        y: @options.screenHeight
-      bottom:
-        y: statesHeights.bottom
-      middle:
-        y: statesHeights.middle
-      top:
-        y: statesHeights.top
+    statesHeights = {}
+    @options.ranges = []
+    @options.highest = @options.screenHeight
 
-    @options.ranges = [
-      { max: statesHeights.top + @options.tolerance, min: statesHeights.top - @options.tolerance, name: 'top' }
-      { max: statesHeights.middle + @options.tolerance, min: statesHeights.middle - @options.tolerance, name: 'middle' }
-      { max: statesHeights.bottom + @options.tolerance, min: statesHeights.bottom - @options.tolerance, name: 'bottom' }
-    ]
+    if @options.hideable
+      @options.states.push { name: 'hidden', height: 0 }
+    
+    @options.states.sort (a, b) -> a.height - b.height
+
+    @options.states.forEach((state, i) =>
+      state.down = if @options.states[i - 1] then @options.states[i - 1].name else null
+      state.up = if @options.states[i + 1] then @options.states[i + 1].name else null
+      state.y = @_covertPercentageToPx(@options.screenHeight, state.height)
+
+      statesHeights[state.name] = state.y
+
+      @options.highest = Math.min state.y, @options.highest
+
+      @options.ranges.push
+        name: state.name
+        max: state.y + @options.tolerance
+        min: state.y - @options.tolerance
+    )
 
     @_createLayers(statesHeights)
+
+  _isNear: (val, target, threshold) ->
+    Math.abs(val - target) <= threshold
 
   # Convert percentage to pixels based on screen height
   _getSwipePageHeight: (screenHeight, percentage) ->
     Utils.round(screenHeight * (percentage / 100))
 
-  _getStateToSnap: (ranges, y) ->
-    ranges.find((range) -> range.min <= y <= range.max)
-
   # Covert percentage to pixels difference based on screen height
-  _covertPercentageToPx:(screenHeight, percentage) ->
+  _covertPercentageToPx: (screenHeight, percentage) ->
     Utils.round(screenHeight * ((100 - percentage) / 100))
 
   # Convert pixels to percentage based on screen height
@@ -85,9 +87,27 @@ class VerticalPanel extends Layer
   _getDiff: (y, newY) ->
     Utils.round(Math.abs(y - newY) / @options.speedRatio) / 1000
 
-  _addStates: (panel, states) ->
-    panel.states = @options.states
-    panel.stateSwitch(@options.initState)
+  _getState: (currentState) =>
+    @options.states.find (state) -> currentState == state.name
+
+  _getClosestState: (y) =>
+    prevState = closestState = null
+    close = { y: 0 }
+    @options.states.forEach((state) =>
+      if @_isNear(y, state.y, @options.screenHeight * 0.10)
+        if prevState
+          diff = Math.abs y - state.y
+          diff2 = Math.abs y - prevState.y
+          if diff < diff2 then closestState = prevState
+        closestState = state
+        prevState = state
+    )
+    return closestState
+
+  _addState: (panel, state) ->
+    panel.states[state.name] = 
+      y: state.y
+
   _createLayers: (statesHeights) ->
     @options.wrapperPanel = wrapperPanel = new Layer
       backgroundColor: 'transparent'
@@ -114,12 +134,8 @@ class VerticalPanel extends Layer
       shadowY: -1
       # Dimensions
       height: @_getSwipePageHeight(
-        @options.screenHeight, @options.top) + @options.screenHeight * 0.1
+        @options.screenHeight, @options.states[ @options.states.length - 1].height) + @options.screenHeight * 0.1
       width: @options.screenWidth
-
-    if @options.fullHeight then @options.verticalPanel.height = @options.screenHeight
-
-    verticalPanel.style['border-radius'] = '16px 16px 0 0'
 
     if @options.indicator
 
@@ -142,9 +158,11 @@ class VerticalPanel extends Layer
         x: Align.center
         y: 9
 
-    @_addStates(verticalPanel, @options.states)
+    @options.states.forEach (state) => @_addState(verticalPanel, state)
     @_setAnimationOptions(verticalPanel)
     @_registerPanelEvents(verticalPanel, bgPanel, statesHeights)
+
+    verticalPanel.stateSwitch @options.initState || @options.states[0].name
 
   _setAnimationOptions: (layer) ->
     layer.animationOptions =
@@ -156,9 +174,9 @@ class VerticalPanel extends Layer
       layer.draggable.momentum = false
 
   _registerPanelEvents: (panel, background, statesHeights) ->
-    posBottom = statesHeights.bottom
-    posMiddle = statesHeights.middle
-    posTop = statesHeights.top
+    higherState = @options.states[ @options.states.length - 2].y
+    highestState = @options.states[ @options.states.length - 1].name
+    highestStateY = @options.highest
 
     bgHandler = (event, layer) =>
       if panel.states.previous.name == panel.states.current.name or panel.states.previous.name == 'default'
@@ -166,14 +184,14 @@ class VerticalPanel extends Layer
       else if layer.opacity == @options.alphaOpacity && panel.states.previous.name?
         @animateTo(panel.states.previous.name)
 
-    if @options.initState != 'top'
+    if @options.initState != highestState
       background.off(Events.Tap, bgHandler)
     else
       background.opacity = @options.alphaOpacity
       background.on(Events.Tap, bgHandler)
 
     panel.onStateSwitchEnd (from, to) ->
-      if to == 'top' or panel.y == posTop
+      if to == highestState or panel.y == highestStateY
         background.on(Events.Tap, bgHandler)
         background.ignoreEvents = false
       else
@@ -181,47 +199,42 @@ class VerticalPanel extends Layer
         background.ignoreEvents = true
 
     panel.onDragMove (event, layer) =>
-      maxTop = posTop - @options.screenHeight * 0.1
-      if layer.y <= 0
-        layer.y = 0
+      maxTop = highestStateY - @options.screenHeight * 0.1
+      if layer.y <= 0 then layer.y = 0
+
+    panel.onDragEnd (event, layer) =>
+      y = layer.y
+      time = null
+      velocity = event.velocityY
+      currentState = layer.states.current
+      stateObj = @_getState currentState.name
+      nextStateName = currentState.name
+      closestState = @_getClosestState(y)
+
+      switch event.offsetDirection
+        when 'up', 'down'
+          direction = event.offsetDirection
+        else
+          direction = false
+
+      if velocity >= @options.deltaTolerance
+        nextStateName = @options.states[0].name
+      else if velocity <= @options.deltaTolerance * -1
+        nextStateName = highestState
+      else if direction and stateObj[direction]
+        nextStateName = stateObj[direction]
+
+      @animateTo nextStateName, time
 
     panel.on "change:y", =>
-      if panel.y < posMiddle
+      if panel.y < higherState
         background.opacity = Utils.modulate(
-          panel.y, [posMiddle, posTop], [0, @options.alphaOpacity], true
+          panel.y, [higherState, highestStateY], [0, @options.alphaOpacity], true
         )
       else
         background.animate
           opacity: 0
           options: time: 0.1
-
-    panel.onDragEnd (event, layer) =>
-      time = null
-      y = layer.y
-      direction = event.offsetDirection
-      snapState = if @_getStateToSnap(@options.ranges, y) then @_getStateToSnap(@options.ranges, y).name else null
-      nextState = layer.states.current.name
-      velocity = Utils.round(Math.abs(event.velocityY), 2)
-      percentage = Utils.round(Math.abs(@_convertPxtoPercentage(@options.screenHeight, event.offset.y)), 2)
-      if layer.y <= posTop
-        nextState = 'top'
-      else if percentage >= 10 or velocity >= 0.25
-          if direction == 'up'
-            if posMiddle <= layer.y <= posBottom
-              nextState = 'middle'
-            else if posMiddle >= layer.y
-              nextState = 'top'
-            else
-              nextState = 'bottom'
-          else if direction == 'down'
-            if posMiddle >= layer.y >= posTop
-              nextState = 'middle'
-            else if layer.y >= posMiddle
-              nextState = 'bottom'
-
-      nextState = snapState || nextState
-
-      @animateTo(nextState, time)
 
   animateTo: (nextState, time = null) ->
     diff = time || Utils.round(
@@ -230,6 +243,7 @@ class VerticalPanel extends Layer
         @options.verticalPanel.states[nextState].y
         ), 3)
     if diff < 0.25 then diff = 0.25
+    if diff > 0.6 then diff = 0.6
     @options.verticalPanel.animate(nextState, options: time: diff)
 
-module.exports = VerticalPanel
+module.exports = BottomSheet

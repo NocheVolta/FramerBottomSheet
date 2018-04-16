@@ -1,11 +1,11 @@
 {
-    "name": "Vertical Panel",
+    "name": "Bottom Sheet",
     "description": "Component inspired on the bottom sheet view pattern of Maps (iOS) by Apple.",
     "author": "Iván Flores",
 
-    "require": "VerticalPanel = require 'verticalPanelComponent'" ,
-    "install": "verticalPanelComponent.coffee",
+    "require": "bottomSheet = require 'BottomSheet'" ,
+    "install": "BottomSheet.coffee",
     "example": "example.coffee",
 
-    "thumb": "verticalpanel.png"
+    "thumb": "bottomSheet.png"
 }

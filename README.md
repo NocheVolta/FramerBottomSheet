@@ -1,113 +1,119 @@
-## Framer Vertical Panel
+## Framer Bottom Sheet
 [![license](https://img.shields.io/github/license/bpxl-labs/RemoteLayer.svg)](https://opensource.org/licenses/MIT)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 ![Maintenance](https://img.shields.io/maintenance/yes/2018.svg)
 
-Framer Vertical Panel is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/WNLzV)
+Framer Bottom Sheet is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/nDHim)
 
-[![verticalpanel.png](https://s1.postimg.org/75635n4agv/verticalpanel.png)](https://postimg.org/image/2ikg4y5qt7/)
-
+![Framer Bottom Sheet](framerBottomSheet.gif)
 
 ### Install with Framer Modules
 
-<a href='https://open.framermodules.com/Vertical Panel'>
-    <img alt='Install with Framer Modules'
-    src='https://www.framermodules.com/assets/badge@2x.png' width='160' height='40' />
+<a href='https://open.framermodules.com/Bottom Sheet'>
+  <img alt='Install with Framer Modules'
+  src='https://www.framermodules.com/assets/badge@2x.png' width='160' height='40' />
 </a>
 
 ### Manual Install
 
-1. Copy the `verticalPanelComponent.coffee` file in the modules directory inside your project.
+1. Copy the `BottomSheet.coffee` file in the modules directory inside your project.
 
 2. Import it using this line one the top of your code view   
-`VerticalPanel = require 'verticalPanelComponent'`
+`BottomSheet = require 'BottomSheet'`
 
-3. Create your first vertical panel using  
-`panelBuilder = new VerticalPanel`
-
-### Default States
-
-Each vertical panel has 4 default states. You can overwrite them by passing a numeric value. This number is the percentage of the screen that the panel will cover. For example, setting `middle: 50` make the panel cover half of the screen.
-
-| State name |   Property   | Default value | Description                    |
-| :--------: | :----------: | :-----------: | ------------------------------ |
-|   hidden   |              |       0       | Use this to hide the component |
-|   bottom   | bottom |      10       | Show panel at 10% of the screen height  |
-|   middle   | middle |      45       | Show panel at 45% of the screen height  |
-|    top     |  top  |      90       | Show panel at 90% of the screen height  |
-
+3. Create your first bottom sheet using
+`bottomSheet = new BottomSheet`
 
 ### Customization styles and animations
 
 |    Property    | Default Value | Description                              |
 | :------------: | :-----------: | ---------------------------------------- |
-|   alphaColor   |    #000000    | Color of alpha that appear when moving between `middle` and `top` states. |
+|   alphaColor   |    '#000000'    | Color of alpha that appear when moving to the highest state. |
 |   alphaOpacity |    0.6        | Opacity value for the alpha background |
-| backgrounColor |    #F0F0F0    | Background color of the panel            |
-|     image      |               | Background image of the panel            |
-|   initState    |    hidden     | State in which the panel will be initialized |
-|      name      | verticalPanel | Name that will have the layers created, this helps to identify the panel in your list of layers. |
-|      indicator | true          | Show the indicator on the top of the panel |
-|      dragable  | true          | Set the panel to be dragable |
-| animationCurve | Spring(damping: 0.75) | Curve to when panel move between states |
-| speedRatio     | 0.75           | Higher the number, faster the animations * |
-| fullHeight     | false           | Panel height is equal to the screen height |
-| fallbackState  | middle          | State to be used when a previous state is not available and user tap on the dim background |
-| tolerance     | 30           | Minimum number of points of tolerance on DragEnd to come back to the current state.  |
+| animationCurve | Spring(damping: 0.75) | Curve to when sheet move between states |
+| backgrounColor |    '#F0F0F0'    | Background color of the sheet            |
+| deltaTolerance | 1.25           |  Minium number of delta movement to move sheet to the highest/lowest state |
+|      dragable  | true          | Define if sheet is dragable |
+| fallbackState  |              | State to be used when a previous state is not available and user tap on the dim background.  |
+| hideable      | true           |  Define is sheet can be dismissed |
+|     image      |               | Background image of the sheet            |
+|      indicator | true          | Show the indicator on the top of the sheet |
+|   initState    |               | State in which the sheet will be initialized |
+|      name      | 'verticalPanel' | Name that will have the layers created, this helps to identify the sheet in your list of layers. |
+| speedRatio     | 0.35         | Higher the number, faster the animations |
+| states      | 30              | Read about define custom states  |
+| tolerance      | 30           | Minimum number of points of tolerance on DragEnd to come back to the current state.  |
 
+You can always use `bottomSheet.content.animate('stateName', options)` if you want have more control.
 
-\* The animations between states now have a variable timing relative to the distance (points) to move. For example if the panel will animate 300 points, the calc will be `Utils.round(300 / speedRatio) / 1000` = `0.343` seconds.
+### Default states
 
-You can always use `panelName.content.animate('stateName', options)` if you want have more control.
+Each bottom sheet has 3 default states.
+
+| Defaut state name |   Property   | Default value | Description                    |
+| :---------------: | :----------: | :-----------: | ------------------------------ |
+|   bottom          | bottom       |      15       | Show sheet at 15% of the screen height  |
+|   middle          | middle       |      45       | Show sheet at 45% of the screen height  |
+|    top            |  top         |      90       | Show sheet at 90% of the screen height  |
+
+### Define custom states
+
+You can define your custom states by passing an array. The `height` value is the % of the `Screen.height`. For example `50` means the half of the screen.  
+
+```coffeescript
+bottomSheet = new BottomSheet
+  states: [
+    { name: 'small', height: 15 }
+    { name: 'midium', height: 40 }
+    { name: 'big', height: 75 }
+    { name: 'full', height: 100 }
+  ]
+```
 
 ### Functions
 
 | Function          | Description          |
 | ----------------- | -------------------- |
-| panelName.wrapper | Returns the wrapper layer. This layer contains everything, including the alpha background |
-| panelName.content | Returns the panel layer. This helps change layers properties, add new states, etc. |
-| panelName.indicator | Return the indicator layer. |
-| panelName.state | Returns current panel state. For example 'top', 'middle' |
-| panelName.animateTo(state, time) | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property, time argument overwrite the speedRatio and max/min values. |
+| bottomSheet.wrapper | Returns the wrapper layer. This layer contains everything, including the alpha background |
+| bottomSheet.content | Returns the sheet layer. This helps change layers properties, add new states, etc. |
+| bottomSheet.indicator | Return the indicator layer. |
+| bottomSheet.state | Returns current sheet state. For example 'top', 'middle' |
+| bottomSheet.animateTo(state, time) | Gets the difference on position Y between current state and next one, then animate based on the speedRatio property, time argument overwrite the speedRatio and max/min values. |
 
 ### Examples
 
 ```coffeescript
-# Create a panel, initialize it with the 'bottom' state, and a red background
-panelBuilder = new VerticalPanel
+# Create a sheet, initialize it with the 'bottom' state, and a red background
+bottomSheet = new BottomSheet
   name: 'builder'
   initState: 'bottom'
   backgroundColor: 'red'
-  speedRatio: 600
 
-# Change panel properties after it has been created
-panelBuilder.content.backgrondColor = 'cyan'
-panelBuilder.content.blur = 3
+# Change sheet properties after it has been created
+bottomSheet.content.backgrondColor = 'cyan'
+bottomSheet.content.blur = 3
 
-# Print the current panel state name
-print panelBuilder.state
+# Print the current sheet state name
+print bottomSheet.state
 
 # Set a custom name and overwrite the default state heights, and add an image as background
-panelVehicle = new VerticalPanel
+panelVehicle = new BottomSheet
   name: 'myVehiclesPanel'
-  bottom: 5
-  middle: 30
-  top: 50
   image: 'images/vehicles.png'
 
 # Animate to other state
-panelBuilder.animateTo('top')
+bottomSheet.animateTo('top', 0.75)
 
 # Animate to other state with default .animate function
-panelBuilder.content.animate(
+bottomSheet.content.animate(
 	'top',
     options: time: 1, curve: Spring(damping: 0.1)
 )
 
-# Add a new state to the panel and animate
-panel.content.states.bgPurple =
+# Add a new state to the sheet and animate
+sheet.content.states.bgPurple =
   backgroundColor: 'purple'
   options: time: 0.5
 
-panel.content.animate('bgPurple')
+bottomSheet.content.animate('bgPurple')
 ```
