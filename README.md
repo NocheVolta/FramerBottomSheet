@@ -3,9 +3,10 @@
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 ![Maintenance](https://img.shields.io/maintenance/yes/2018.svg)
 
-Framer Bottom Sheet is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. [View demo](https://framer.cloud/nDHim)
+Framer Bottom Sheet is a component inspired on the bottom sheet view pattern of Maps (iOS) by Apple. 
+[View demo](https://framer.cloud/nDHim)
 
-![Framer Bottom Sheet](framerBottomSheet.gif)
+<img alt='Framer Bottom Sheet'src='https://raw.githubusercontent.com/NocheVolta/FramerBottomSheet/master/bottomSheet.gif' width='280' />
 
 ### Install with Framer Modules
 
