@@ -107,8 +107,8 @@ bottomSheet.animateTo('top', 0.75)
 
 # Animate to other state with default .animate function
 bottomSheet.content.animate(
-	'top',
-    options: time: 1, curve: Spring(damping: 0.1)
+  'top',
+  options: time: 1, curve: Spring(damping: 0.1)
 )
 
 # Add a new state to the sheet and animate
