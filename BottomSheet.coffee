@@ -224,6 +224,9 @@ class BottomSheet extends Layer
       else if direction and stateObj[direction]
         nextStateName = stateObj[direction]
 
+      if  !@options.hideable and nextStateName == "hidden"
+        nextStateName = currentState.name
+
       @animateTo nextStateName, time
 
     panel.on "change:y", =>
